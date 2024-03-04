@@ -23,29 +23,58 @@ import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 
 public class AddRecordDialog extends JDialog implements ActionListener {
+	private ClearfieldsInterface clearFields;
 	JTextField idField, ppsField, surnameField, firstNameField, salaryField;
 	JComboBox<String> genderCombo, departmentCombo, fullTimeCombo;
 	JButton save, cancel;
 	EmployeeDetails parent;
+	ManagerRecord Managerrecord;
 	// constructor for add record dialog
-	public AddRecordDialog(EmployeeDetails parent) {
+	public AddRecordDialog(EmployeeDetails parent, ClearfieldsInterface clearFields, ManagerRecord ManagerRecord) {
+		this.clearFields = clearFields;
 		setTitle("Add Record");
 		setModal(true);
+		this.Managerrecord = ManagerRecord;
 		this.parent = parent;
 		this.parent.setEnabled(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
+
 		JScrollPane scrollPane = new JScrollPane(dialogPane());
 		setContentPane(scrollPane);
-		
+
 		getRootPane().setDefaultButton(save);
-		
+
 		setSize(500, 370);
 		setLocation(350, 250);
 		setVisible(true);
 	}// end AddRecordDialog
 
-	// initialize dialog container
+	public void addEmployeeRecord() {
+	    boolean isFullTime = false;
+	    Employee theEmployee;
+
+	    if (((String) fullTimeCombo.getSelectedItem()).equalsIgnoreCase("Yes"))
+	        isFullTime = true;
+	    
+	    // Create a new Employee record with details from text fields
+	    theEmployee = new Employee(
+	            Integer.parseInt(idField.getText()),
+	            ppsField.getText().toUpperCase(),
+	            surnameField.getText().toUpperCase(),
+	            firstNameField.getText().toUpperCase(),
+	            genderCombo.getSelectedItem().toString().charAt(0),
+	            departmentCombo.getSelectedItem().toString(),
+	            Double.parseDouble(salaryField.getText()),
+	            isFullTime);
+
+	    this.parent.currentEmployee = theEmployee;
+	    this.parent.addRecord(theEmployee);
+	    Managerrecord.displayRecords(theEmployee);
+	} 
+
+
+
+	// Initialise dialog container
 	public Container dialogPane() {
 		JPanel empDetails, buttonPanel;
 		empDetails = new JPanel(new MigLayout());
@@ -57,7 +86,7 @@ public class AddRecordDialog extends JDialog implements ActionListener {
 		empDetails.add(new JLabel("ID:"), "growx, pushx");
 		empDetails.add(idField = new JTextField(20), "growx, pushx, wrap");
 		idField.setEditable(false);
-		
+
 
 		empDetails.add(new JLabel("PPS Number:"), "growx, pushx");
 		empDetails.add(ppsField = new JTextField(20), "growx, pushx, wrap");
@@ -98,27 +127,11 @@ public class AddRecordDialog extends JDialog implements ActionListener {
 				if(field == ppsField)
 					field.setDocument(new JTextFieldLimit(9));
 				else
-				field.setDocument(new JTextFieldLimit(20));
+					field.setDocument(new JTextFieldLimit(20));
 			}// end else if
 		}// end for
 		idField.setText(Integer.toString(this.parent.getNextFreeId()));
 		return empDetails;
-	}
-
-	// add record to file
-	public void addRecord() {
-		boolean fullTime = false;
-		Employee theEmployee;
-
-		if (((String) fullTimeCombo.getSelectedItem()).equalsIgnoreCase("Yes"))
-			fullTime = true;
-		// create new Employee record with details from text fields
-		theEmployee = new Employee(Integer.parseInt(idField.getText()), ppsField.getText().toUpperCase(), surnameField.getText().toUpperCase(),
-				firstNameField.getText().toUpperCase(), genderCombo.getSelectedItem().toString().charAt(0),
-				departmentCombo.getSelectedItem().toString(), Double.parseDouble(salaryField.getText()), fullTime);
-		this.parent.currentEmployee = theEmployee;
-		this.parent.addRecord(theEmployee);
-		this.parent.displayRecords(theEmployee);
 	}
 
 	// check for input in text fields
@@ -168,17 +181,6 @@ public class AddRecordDialog extends JDialog implements ActionListener {
 		return valid;
 	}// end checkInput
 
-	// set text field to white colour
-	public void setToWhite() {
-		ppsField.setBackground(Color.WHITE);
-		surnameField.setBackground(Color.WHITE);
-		firstNameField.setBackground(Color.WHITE);
-		salaryField.setBackground(Color.WHITE);
-		genderCombo.setBackground(Color.WHITE);
-		departmentCombo.setBackground(Color.WHITE);
-		fullTimeCombo.setBackground(Color.WHITE);
-	}// end setToWhite
-
 	// action performed
 	public void actionPerformed(ActionEvent e) {
 		// if chosen option save, save record to file
@@ -192,7 +194,7 @@ public class AddRecordDialog extends JDialog implements ActionListener {
 			// else display message and set text fields to white colour
 			else {
 				JOptionPane.showMessageDialog(null, "Wrong values or format! Please check!");
-				setToWhite();
+				clearFields.setToWhite();
 			}// end else
 		}// end if
 		else if (e.getSource() == cancel)

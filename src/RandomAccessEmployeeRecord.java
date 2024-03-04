@@ -16,8 +16,16 @@ public class RandomAccessEmployeeRecord extends Employee
    {
       this(0, "","","",'\0', "", 0.0, false);
    } // end RandomAccessEmployeeRecord
+   
+   // New Constructor 
+   public RandomAccessEmployeeRecord(Employee employee){
+	    this(employee.getEmployeeId(), employee.getPps(),
+	         employee.getSurname(), employee.getFirstName(), employee.getGender(),
+	         employee.getDepartment(), employee.getSalary(), employee.getFullTime());
+	}
 
-   // Initialize record with details
+
+   // Initialise record with details
    public RandomAccessEmployeeRecord( int employeeId, String pps, String surname, String firstName, char gender, 
 		   String department, double salary, boolean fullTime)
    {
@@ -50,7 +58,7 @@ public class RandomAccessEmployeeRecord extends Employee
       
       return new String( name ).replace( '\0', ' ' );
    } // end readName
-
+   
    // Write a record to specified RandomAccessFile
    public void write( RandomAccessFile file ) throws IOException
    {

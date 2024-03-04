@@ -9,7 +9,7 @@
 	    JDialog createEmployeeSummaryDialog(EmployeeDetails parent, Vector<Object> allEmployees);
 	    JDialog createSearchByIdDialog(EmployeeDetails parent);
 	    JDialog createSearchBySurnameDialog(EmployeeDetails parent);
-	    JDialog createAddRecordDialog(EmployeeDetails parent, ClearFields clearFields, ManagerRecord Managerrecord);
+	    JDialog createAddRecordDialog(EmployeeDetails parent, ClearfieldsInterface clearFields, ManagerRecord Managerrecord);
 	}
 
 	// Concrete factory implementing the DialogFactory interface
@@ -30,7 +30,7 @@
 	    }
 
 	    @Override
-	    public JDialog createAddRecordDialog(EmployeeDetails parent, ClearFields clearFields, ManagerRecord Managerrecord) {
+	    public JDialog createAddRecordDialog(EmployeeDetails parent, ClearfieldsInterface clearFields, ManagerRecord Managerrecord) {
 	        return new AddRecordDialog(parent, clearFields, Managerrecord);
 	    }
 	}
